@@ -1,13 +1,14 @@
 {
   "pages": [
     "pages/start/main",
+    "pages/info/main",
     "pages/index/main",
     "pages/category/main",
     "pages/cart/main",
     "pages/mine/main",
+    "pages/search/main",
     "pages/list/main",
-    "pages/detail/main",
-    "pages/info/main"
+    "pages/detail/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

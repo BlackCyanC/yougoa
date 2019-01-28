@@ -43,7 +43,7 @@
     components: {
       searchbox
     },
-    async created() {
+    async onLoad() {
       let res = await hxios.get({
         url: "api/public/v1/categories"
       });

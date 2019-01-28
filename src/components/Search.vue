@@ -1,17 +1,24 @@
 <template>
   <!-- 搜索区域 -->
-  <div class="search">
+  <div class="search" @click="toSearch">
     <input type="text" placeholder="搜索">
     <icon type="search" size="12" class="icon"></icon>
   </div>
 </template>
 <script>
   export default {
-    name: "search"
+    name: "search",
+    methods: {
+      toSearch() {
+        wx.navigateTo({
+          url: '/pages/search/main'
+        })
+      }
+    }
   }
 </script>
 <style scoped lang="less">
-@main-color: #00bfbf;
+  @main-color: #00bfbf;
   .search {
     position: fixed;
     z-index: 999;

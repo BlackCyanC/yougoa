@@ -64,7 +64,7 @@
     components: {
       searchbox
     },
-    async created() {
+    async onLoad() {
       let swiperReq = hxios.get({
         url: "api/public/v1/home/swiperdata"
       })
