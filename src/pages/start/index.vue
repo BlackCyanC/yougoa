@@ -6,6 +6,7 @@
       <li><a @click="goList" href="/pages/list/main">LOL英雄信息查询</a></li>
       <li><a @click="goIndex" href="">YouGo商城</a></li>
     </ul>
+    <h5><a href="/pages/info/main">关于我</a></h5>
   </div>
 </template>
 

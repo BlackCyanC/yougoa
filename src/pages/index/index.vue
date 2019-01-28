@@ -1,11 +1,6 @@
 <template>
   <div id="index-container">
-
-    <!-- 搜索区域 -->
-    <div class="search">
-      <input type="text" placeholder="搜索">
-      <icon type="search" size="12" class="icon"></icon>
-    </div>
+    <searchbox></searchbox>
     <!-- 轮播图区域 -->
     <div class="swiper-container">
       <swiper indicator-dots autoplay circular indicator-active-color="#00bfbf">
@@ -48,6 +43,7 @@
 
 <script>
   import hxios from '../../utils/index.js'
+  import searchbox from '../../components/Search.vue'
   export default {
     data() {
       return {
@@ -64,6 +60,9 @@
           duration: 300
         })
       }
+    },
+    components: {
+      searchbox
     },
     async created() {
       let swiperReq = hxios.get({
@@ -95,29 +94,6 @@
   #index-container {
     padding-top: 100rpx;
     position: relative;
-    .search {
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      padding: 20rpx 16rpx;
-      background: @main-color;
-      box-sizing: border-box;
-      font-size: 24rpx;
-      input {
-        padding-left: 376rpx;
-        height: 60rpx;
-        background: white;
-        border-radius: 6rpx;
-      }
-      .icon {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-      }
-    }
     swiper {
       width: 100vw;
       .img {
