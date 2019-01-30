@@ -1,19 +1,23 @@
 {
   "pages": [
     "pages/start/main",
-    "pages/info/main",
+    "pages/myinfo/main",
     "pages/index/main",
     "pages/category/main",
     "pages/cart/main",
     "pages/mine/main",
     "pages/search/main",
-    "pages/list/main",
-    "pages/detail/main"
+    "pages/herolist/main",
+    "pages/herodetail/main",
+    "pages/movieindex/main",
+    "pages/movielist/main",
+    "pages/movieinfo/main",
+    "pages/moviesearch/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#00bfbf",
-    "navigationBarTitleText": "YouGo",
+    "navigationBarTitleText": "MyWeChatDev",
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
