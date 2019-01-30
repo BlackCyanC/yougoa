@@ -5,7 +5,8 @@
 		"es6": false,
 		"postcss": true,
 		"minified": true,
-		"newFeature": true
+		"newFeature": true,
+		"autoAudits": false
 	},
 	"miniprogramRoot": "dist/wx/",
 	"compileType": "miniprogram",
@@ -29,7 +30,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 1,
+			"current": 4,
 			"list": [
 				{
 					"id": -1,
@@ -40,7 +41,25 @@
 				{
 					"id": -1,
 					"name": "去分类",
-					"pathName": "pages/category/main"
+					"pathName": "pages/category/main",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "去搜索",
+					"pathName": "pages/search/main",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "去电影",
+					"pathName": "pages/movieindex/main",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "aboutMe",
+					"pathName": "pages/myinfo/main"
 				}
 			]
 		}

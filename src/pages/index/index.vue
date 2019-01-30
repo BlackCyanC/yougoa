@@ -1,5 +1,6 @@
 <template>
   <div id="index-container">
+    <div class="back-index" @click="goBack">首页</div>
     <searchbox></searchbox>
     <!-- 轮播图区域 -->
     <div class="swiper-container">
@@ -59,6 +60,11 @@
           scrollTop: 0,
           duration: 300
         })
+      },
+      goBack() {
+        wx.navigateTo({
+          url: '/pages/start/main'
+        })
       }
     },
     components: {
@@ -92,6 +98,18 @@
 <style lang="less" scoped>
   @main-color: #00bfbf;
   #index-container {
+    .back-index {
+      position: fixed;
+      top: 100rpx;
+      text-align: center;
+      line-height: 40rpx;
+      font-size: 14rpx;
+      background-color: #f10215;
+      z-index: 999;
+      border-radius: 50%;
+      width: 40rpx;
+      height: 40rpx;
+    }
     padding-top: 100rpx;
     position: relative;
     swiper {

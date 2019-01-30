@@ -3,10 +3,11 @@
     <h3>我的微信小程序开发</h3>
     <h6>案例:</h6>
     <ul>
-      <li><a @click="goList" href="/pages/list/main">LOL英雄信息查询</a></li>
+      <li><a href="/pages/herolist/main">LOL英雄信息查询</a></li>
+      <li><a href="/pages/movieindex/main">黑板豆电影</a></li>
       <li><a @click="goIndex" href="">YouGo商城</a></li>
     </ul>
-    <h5><a href="/pages/info/main">关于我</a></h5>
+    <h5><a href="/pages/myinfo/main">关于我</a></h5>
   </div>
 </template>
 
@@ -45,6 +46,10 @@
           text-decoration: underline;
         }
       }
+    }
+    h5 {
+      margin-top: 60rpx;
+        padding-left: 60rpx;
     }
   }
 </style>
