@@ -11,12 +11,11 @@
         <img class="title-img" src="/static/titleImage.png" alt>
         <div class="section" v-for="level1 in categoryList[index].children" :key="level1.cat_id">
           <div class="title">
-            <span>/</span>
-            &nbsp;&nbsp;&nbsp;&nbsp;{{level1.cat_name}}&nbsp;&nbsp;&nbsp;&nbsp;
+            <span>/</span> &nbsp;&nbsp;&nbsp;&nbsp;{{level1.cat_name}}&nbsp;&nbsp;&nbsp;&nbsp;
             <span>/</span>
           </div>
           <div class="items">
-            <div class="item" v-for="(level2,i) in level1.children" :key="level2.cat_id">
+            <div class="item" v-for="(level2,i) in level1.children" :key="level2.cat_id" @click="toSearch(level2.cat_name)">
               <img :src="'https://autumnfish.cn/wx/'+level2.cat_icon" alt>
               <p>{{level2.cat_name}}</p>
             </div>
@@ -34,10 +33,18 @@
     data() {
       return {
         // 分类数据
-        categoryList: [{children: []}],
+        categoryList: [{
+          children: []
+        }],
         // 索引值
         index: 0
       };
+    },
+    methods: {
+      toSearch(query) {
+        console.log('toSearch');
+        wx.navigateTo({ url: '/pages/search/main?query=' + query });
+      }
     },
     // 注册组件
     components: {
@@ -54,7 +61,7 @@
 </script>
 
 <style lang="less">
-  ::-webkit-scrollbar {
+   ::-webkit-scrollbar {
     width: 0;
     height: 0;
     color: transparent;
@@ -103,8 +110,7 @@
       }
     }
     .right {
-      flex: 1;
-      // background-color: skyblue;
+      flex: 1; // background-color: skyblue;
       padding: 15rpx;
       box-sizing: border-box;
       .title-img {
