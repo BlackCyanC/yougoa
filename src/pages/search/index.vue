@@ -32,20 +32,22 @@
           </div>
         </div>
         <!-- 商品盒子 -->
-        <div class="goods-box">
-          <div class="item" v-for="(item, index) in results" :key="item.goods_id">
-            <div class="left">
-              <img :src="item.goods_small_logo" alt>
-            </div>
-            <div class="right">
-              <div class="top">{{item.goods_name}}</div>
-              <div class="bottom">
-                ¥
-                <span>{{item.goods_price}}</span>.00
+        <scroll-view scroll-y scroll-with-animation class="scroll-box">
+          <div class="goods-box">
+            <a class="item" v-for="(item, index) in results" :key="item.goods_id" :href="'/pages/detail/main?id='+item.goods_id">
+              <div class="left">
+                <img :src="item.goods_small_logo" alt>
               </div>
-            </div>
+              <div class="right">
+                <div class="top">{{item.goods_name}}</div>
+                <div class="bottom">
+                  ¥
+                  <span>{{item.goods_price}}</span>.00
+                </div>
+              </div>
+            </a>
           </div>
-        </div>
+        </scroll-view>
       </div>
     </div>
   </div>
@@ -54,12 +56,6 @@
 <script>
   // 导入hxios
   import hxios from '../../utils/index.js';
-  import {
-    log
-  } from 'util';
-  import {
-    setTimeout
-  } from 'timers';
   export default {
     name: "search",
     data() {
@@ -166,11 +162,45 @@
           });
         },
       })
+      wx.getSystemInfo({      
+        success:   function(res)  {        
+          console.log(res.windowWidth);        
+          console.log(res.windowHeight);      
+        },
+            
+      })
+    },
+    async onLoad(options) {
+      console.log("到Search 了");
+      console.log(options.query);
+      if (options.query) {
+        console.log(1);
+        this.inputValue = options.query
+        let index = this.itemList.findIndex(v => {
+          return v === this.inputValue
+        })
+        // 存在删除
+        if (index != -1) {
+          this.itemList.splice(index, 1)
+        }
+        // 新添加到数组首位
+        this.itemList.unshift(this.inputValue)
+        let res = await hxios.get({
+          url: `api/public/v1/goods/search?query=${this.inputValue}`
+        })
+        console.log(res);
+        this.results = res.data.message.goods
+      }
     }
   };
 </script>
 
 <style lang="less">
+   ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    color: transparent;
+  }
   @main-color: #00bfbf;
   .search-box {
     display: flex;
@@ -315,7 +345,7 @@
       width: 100%;
       left: 0;
       top: 0;
-      height: 60rpx;
+      box-sizing: border-box;
     }
     .result-box {
       position: relative;
@@ -326,7 +356,11 @@
         width: 100%;
         left: 0;
         top: 120rpx;
+        z-index: 998;
       }
     }
+  }
+  .scroll-box {
+    height: 986rpx !important;
   }
 </style>

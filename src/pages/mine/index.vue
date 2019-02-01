@@ -59,8 +59,8 @@
         </div>
       </div>
       <div class="option-box">
-        <div class="option">
-          <div class="left" @click="callKF">联系我</div>
+        <div class="option" @click="callKF">
+          <div class="left">联系我</div>
           <div class="right">176-8801-8176</div>
         </div>
         <div class="option">
@@ -112,6 +112,7 @@
       },
       // 打电话给客服
       callKF() {
+        console.log(1);
         wx.makePhoneCall({
           phoneNumber: "17688018176"
         });
