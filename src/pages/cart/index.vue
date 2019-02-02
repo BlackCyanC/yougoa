@@ -4,6 +4,7 @@
     <div class="empty" v-show="isEmpty==true">
       <i class='iconfont icon-gouwuche'></i>
       <p>你还没有添加任何商品</p>
+      <p>Token常驻, 故只需一次登录验证</p>
     </div>
     <!-- 非空的购物车 -->
     <div class="full" v-show="isEmpty==false">
@@ -63,7 +64,7 @@
             <div class="top">合计:<span>{{totalPrice}}</span></div>
             <div class="bottom">包含运费</div>
           </div>
-          <button>结算({{totalCount}})</button>
+          <button @click="payOrder">结算({{totalCount}})</button>
         </div>
       </div>
     </div>
@@ -143,7 +144,7 @@
         // console.log("触摸开始");
         // console.log(event);
         // 记录起始的坐标
-        this.startX = event.clientX;
+        this.startX = this.endX = event.clientX;
       },
       // 滑动中
       touchmove(event) {
@@ -160,9 +161,11 @@
         // 根据起始坐标 跟结束的坐标 的差值判断移动的方向
         // console.log(this.endX - this.startX);
         let moveX = this.endX - this.startX;
+        this.endX = 0;
+        this.startX = 0;
         // 获取显示的索引值
         let index = event.currentTarget.dataset.index;
-        console.log(index);
+        console.log(moveX);
         if (moveX < 0) {
           // console.log('左滑');
           this.cartDetailData[index].isShowDel = true;
@@ -178,15 +181,128 @@
         this.cartDetailData.splice(index, 1);
         // 同步保存到缓存中
         cart.updateCartData(this.cartDetailData);
-        console.log(this.cartDetailData);
+        console.log(this.cartDetailData.length);
         if (this.cartDetailData.length === 0) {
           this.isEmpty = true
         }
+      },
+      // 提交订单
+      payOrder() {
+        wx.getStorage({
+          key: 'token',
+          success: async tokenRes => {
+            // 如果有 token 发起提交订单
+            console.log(tokenRes);
+            let goods = []
+            this.cartDetailData.forEach(v => {
+              if (this.cartDetailData.isSelected == true) {
+                goods.push({
+                  goods_id: v.goods_id,
+                  goods_number: v.buyCount,
+                  goods_price: v.goods_price
+                })
+              }
+            })
+            // 提交订单信息
+            let orderRes = await hxios.post({
+              url: "api/public/v1/my/orders/create",
+              header: {
+                "Authorization": tokenRes.data
+              },
+              data: {
+                order_price: this.totalPrice,
+                consignee_addr: this.address,
+                goods
+              }
+            })
+            console.log("提交订单");
+            console.log(orderRes);
+            this.cartDetailData = this.cartDetailData.filter(v => {
+              return v.isSelected === false
+            })
+            // 生成交易订单
+            let payRes = await hxios.post({
+              url: "api/public/v1/my/orders/req_unifiedorder",
+              data: {
+                order_number: orderRes.data.message.order_number
+              },
+              header: {
+                Authorization: tokenRes.data
+              }
+            })
+            console.log("生成交易订单");
+            console.log(payRes);
+            // 调用微信接口生成支付二维码
+            wx.requestPayment({
+              timeStamp: payRes.data.message.wxorder.timeStamp, //时间戳从1970年1月1日00:00:00至今的秒数,即当前的时间,
+              nonceStr: payRes.data.message.wxorder.nonceStr, //随机字符串，长度为32个字符以下,
+              package: payRes.data.message.wxorder.package, //统一下单接口返回的 prepay_id 参数值，提交格式如：prepay_id=*,
+              signType: payRes.data.message.wxorder.signType, //签名算法，暂支持 MD5,
+              paySign: payRes.data.message.wxorder.paySign, //签名,具体签名方案参见小程序支付接口文档,
+              success: res => {
+                console.log(res);
+                wx.showToast({
+                  title: "支付成功", //提示的内容,
+                  icon: "success", //图标,
+                  duration: 2000, //延迟时间,
+                  mask: true, //显示透明蒙层，防止触摸穿透,
+                  success: res => {}
+                });
+              },
+              fail: () => {
+                console.log("失败啦");
+              },
+              complete: () => {}
+            });
+            if (payRes.data.meta.status == 401) {
+              console.log("弹框");
+              wx.showModal({
+                title: "提示", //提示的标题,
+                content: res.data.meta.msg, //提示的内容,
+                showCancel: true, //是否显示取消按钮,
+                cancelText: "取消", //取消按钮的文字，默认为取消，最多 4 个字符,
+                cancelColor: "#000000", //取消按钮的文字颜色,
+                confirmText: "确定", //确定按钮的文字，默认为取消，最多 4 个字符,
+                confirmColor: "#3CC51F", //确定按钮的文字颜色,
+                success: res => {
+                  if (res.confirm) {
+                    // console.log('用户点击确定')
+                    wx.switchTab({
+                      url: "/pages/mine/main"
+                    });
+                  } else if (res.cancel) {
+                    // console.log('用户点击取消')
+                  }
+                }
+              });
+            }
+          },
+          fail: () => {
+            wx.showModal({
+              title: '提示', //提示的标题,
+              content: '请先登录后下单', //提示的内容,
+              showCancel: true, //是否显示取消按钮,
+              cancelText: '取消', //取消按钮的文字，默认为取消，最多 4 个字符,
+              cancelColor: '#000000', //取消按钮的文字颜色,
+              confirmText: '确定', //确定按钮的文字，默认为取消，最多 4 个字符,
+              confirmColor: '#3CC51F', //确定按钮的文字颜色,
+              success: res => {
+                if (res.confirm) {
+                  wx.switchTab({
+                    url: '/pages/mine/main'
+                  });
+                } else if (res.cancel) {
+                  console.log('用户点击取消')
+                }
+              }
+            });
+          },
+          complete: () => {}
+        })
       }
-    
-  },
-  // 计算属性
-  computed: {
+    },
+    // 计算属性
+    computed: {
       // isSelectedAll() {
       //   // 选中的个数 跟总个数的比较
       //   let num = 0;
@@ -225,6 +341,9 @@
         handler: function(val, oldVal) {
           // 传递给购物车函数
           cart.updateCartData(this.cartDetailData);
+          if (val.length === 0) {
+            this.isEmpty = true
+          }
         },
         // 深度监听
         deep: true
@@ -239,8 +358,6 @@
         .then(res => {
           //   console.log(res);
           // 数据在 res.data
-          // 如果有数据 说明购物车不是空的
-          this.isEmpty = false;
           this.cartData = res.data;
           // 在这里才有商品数据
           // 获取 购物车详细数据
@@ -270,6 +387,8 @@
                 v.isShowDel = false;
               });
               this.cartDetailData = res.data.message;
+              // 如果有数据 说明购物车不是空的
+              this.isEmpty = false;
             });
         })
         .catch(res => {
