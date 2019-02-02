@@ -6,6 +6,7 @@
     "pages/category/main",
     "pages/cart/main",
     "pages/mine/main",
+    "pages/order/main",
     "pages/search/main",
     "pages/detail/main",
     "pages/herolist/main",

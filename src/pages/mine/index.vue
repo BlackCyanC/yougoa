@@ -5,8 +5,8 @@
       <div class="icon-box">
         <i class="iconfont icon-shezhi"></i>
         <button open-type="getUserInfo" @getuserinfo="getUserInfo">
-              <img :src="icon" alt>
-            </button>
+                    <img :src="icon" alt>
+                  </button>
         <i class="iconfont icon-xiaoxi"></i>
       </div>
       <p>{{info}}</p>
@@ -44,7 +44,7 @@
           <div class="item">
             <i class="iconfont icon-tuikuan"></i> 退款/退货
           </div>
-          <div class="item">
+          <div class="item" @click="toOrder">
             <i class="iconfont icon-dingdan"></i> 全部订单
           </div>
         </div>
@@ -81,6 +81,7 @@
 </template>
 
 <script>
+  import hxios from '../../utils/index.js'
   export default {
     data() {
       return {
@@ -91,9 +92,42 @@
     // 方法
     methods: {
       getUserInfo(event) {
-        // console.log(event);
         this.icon = event.mp.detail.userInfo.avatarUrl;
         this.info = event.mp.detail.userInfo.nickName;
+        wx.login({
+          success: loginRes => {
+            console.log(loginRes.code)
+            wx.getUserInfo({
+              withCredentials: true,
+              success: res => {
+                console.log("获取用户私密信息");
+                console.log(res);
+                hxios.post({
+                  url: "api/public/v1/users/wxlogin",
+                  data: {
+                    code: loginRes.code,
+                    encryptedData: res.encryptedData,
+                    iv: res.iv,
+                    rawData: res.rawData,
+                    signature: res.signature
+                  },
+                }).then(res => {
+                  console.log(res);
+                  wx.setStorage({
+                    key: 'token',
+                    data: res.token || 'BlackCyan'
+                  });
+                })
+              },
+              fail: (err) => {
+                throw err
+              },
+            });
+          },
+          fail: (err) => {
+            throw err
+          },
+        });
       },
       // 地址获取
       getAddress() {
@@ -115,6 +149,12 @@
         console.log(1);
         wx.makePhoneCall({
           phoneNumber: "17688018176"
+        });
+      },
+      // 订单页
+      toOrder() {
+        wx.navigateTo({
+          url: '/pages/order/main'
         });
       }
     }
